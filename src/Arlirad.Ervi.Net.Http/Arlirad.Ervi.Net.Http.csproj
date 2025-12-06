@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <PackageId>Arlirad.Ervi.Net.Http</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Arlirad</Authors>
+        <Description>Package containing functionality for HTTP-related cases.</Description>
+        <RepositoryUrl>https://github.com/arlirad/ervi</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+</Project>
