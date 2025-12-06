@@ -1,0 +1,11 @@
+bin
+obj
+
+.vscode/**
+.idea/**
+
+global.json
+
+*.code-workspace
+*.user
+*.tmp
