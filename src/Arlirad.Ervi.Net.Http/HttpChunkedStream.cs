@@ -1,3 +1,6 @@
+using System.Globalization;
+using System.Text;
+
 namespace Arlirad.Ervi.Net.Http;
 
 public class HttpChunkedStream(Stream inner) : Stream
@@ -14,7 +17,7 @@ public class HttpChunkedStream(Stream inner) : Stream
         get => throw new NotSupportedException();
         set => throw new NotSupportedException();
     }
-    
+
     private int _chunkRemaining;
     private bool _eof;
 
@@ -31,10 +34,12 @@ public class HttpChunkedStream(Stream inner) : Stream
         if (_chunkRemaining == 0)
         {
             _chunkRemaining = ReadChunkLength();
+
             if (_chunkRemaining == 0)
             {
                 _eof = true;
                 ReadNewLine();
+
                 return 0;
             }
         }
@@ -63,11 +68,12 @@ public class HttpChunkedStream(Stream inner) : Stream
         if (_chunkRemaining == 0)
         {
             _chunkRemaining = await ReadChunkLengthAsync(cancellationToken);
+
             if (_chunkRemaining == 0)
             {
                 _eof = true;
                 await ReadNewLineAsync(cancellationToken);
-                
+
                 return 0;
             }
         }
@@ -121,7 +127,7 @@ public class HttpChunkedStream(Stream inner) : Stream
         await WriteChunkAsync(null);
         await base.DisposeAsync();
     }
-    
+
     private int ReadChunkLength()
     {
         var line = ReadLine();
@@ -129,7 +135,7 @@ public class HttpChunkedStream(Stream inner) : Stream
         if (separatorIndex != -1)
             line = line[..separatorIndex];
 
-        return int.Parse(line.Trim(), System.Globalization.NumberStyles.HexNumber);
+        return int.Parse(line.Trim(), NumberStyles.HexNumber);
     }
 
     private async ValueTask<int> ReadChunkLengthAsync(CancellationToken ct)
@@ -139,14 +145,14 @@ public class HttpChunkedStream(Stream inner) : Stream
         if (separatorIndex != -1)
             line = line[..separatorIndex];
 
-        return int.Parse(line.Trim(), System.Globalization.NumberStyles.HexNumber);
+        return int.Parse(line.Trim(), NumberStyles.HexNumber);
     }
 
     private string ReadLine()
     {
-        var sb = new System.Text.StringBuilder();
+        var sb = new StringBuilder();
         int b;
-        
+
         while ((b = inner.ReadByte()) != -1)
         {
             if (b == '\r')
@@ -154,35 +160,42 @@ public class HttpChunkedStream(Stream inner) : Stream
                 var next = inner.ReadByte();
                 if (next == '\n')
                     break;
+
                 sb.Append((char)b);
                 if (next != -1) sb.Append((char)next);
                 continue;
             }
+
             sb.Append((char)b);
         }
-        
+
         return sb.ToString();
     }
 
     private async ValueTask<string> ReadLineAsync(CancellationToken ct)
     {
-        var sb = new System.Text.StringBuilder();
+        var sb = new StringBuilder();
         var buffer = new byte[1];
-        
+
         while (await inner.ReadAsync(buffer, ct) > 0)
         {
             var b = buffer[0];
+
             if (b == '\r')
             {
                 if (await inner.ReadAsync(buffer, ct) > 0 && buffer[0] == '\n')
                     break;
+
                 sb.Append('\r');
-                if (buffer[0] != '\n') sb.Append((char)buffer[0]);
+                if (buffer[0] != '\n') 
+                    sb.Append((char)buffer[0]);
+                
                 continue;
             }
-            
+
             sb.Append((char)b);
         }
+
         return sb.ToString();
     }
 
@@ -190,7 +203,7 @@ public class HttpChunkedStream(Stream inner) : Stream
     {
         var b1 = inner.ReadByte();
         var b2 = inner.ReadByte();
-        
+
         if (b1 != '\r' || b2 != '\n')
             throw new IOException("Invalid chunked encoding: expected CRLF");
     }
@@ -199,16 +212,16 @@ public class HttpChunkedStream(Stream inner) : Stream
     {
         var buffer = new byte[2];
         var read = 0;
-        
+
         while (read < 2)
         {
             var r = await inner.ReadAsync(buffer.AsMemory(read), ct);
             if (r == 0)
                 throw new IOException("Unexpected end of stream");
-            
+
             read += r;
         }
-        
+
         if (buffer[0] != '\r' || buffer[1] != '\n')
             throw new IOException("Invalid chunked encoding: expected CRLF");
     }
@@ -265,7 +278,7 @@ public class HttpChunkedStream(Stream inner) : Stream
         {
             var nibble = value % 16;
             value /= 16;
-            buffer[--pos] = (byte)((nibble < 10) ? ('0' + nibble) : ('A' + (nibble - 10)));
+            buffer[--pos] = (byte)(nibble < 10 ? '0' + nibble : 'A' + (nibble - 10));
         }
 
         var len = buffer.Length - pos;
