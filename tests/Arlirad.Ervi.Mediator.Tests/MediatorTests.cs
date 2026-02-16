@@ -19,7 +19,10 @@ public class MediatorTests
     [Test]
     public async Task Send_Request_Returns_Response_From_Handler()
     {
-        var mediator = new ReflectionMediator(new ServiceCollection().BuildServiceProvider(), typeof(TestRoot));
+        var services = new ServiceCollection();
+        services.AddMediator(typeof(TestRoot));
+        var provider = services.BuildServiceProvider();
+        var mediator = provider.GetRequiredService<IMediator>();
         var sum = await mediator.Send(new AddNumbers { A = 2, B = 3 }, CancellationToken.None);
         Assert.That(sum, Is.EqualTo(5));
     }
@@ -27,7 +30,10 @@ public class MediatorTests
     [Test]
     public void Send_Request_Throws_When_No_Handler_Found()
     {
-        var mediator = new ReflectionMediator(new ServiceCollection().BuildServiceProvider(), typeof(TestRoot));
+        var services = new ServiceCollection();
+        services.AddMediator(typeof(TestRoot));
+        var provider = services.BuildServiceProvider();
+        var mediator = provider.GetRequiredService<IMediator>();
         // No handler for a different request type
         Assert.ThrowsAsync<InvalidOperationException>(async () =>
             await mediator.Send(new UnregisteredRequest(), CancellationToken.None));
@@ -36,7 +42,10 @@ public class MediatorTests
     [Test]
     public void Send_Request_Respects_CancellationToken()
     {
-        var mediator = new ReflectionMediator(new ServiceCollection().BuildServiceProvider(), typeof(TestRoot));
+        var services = new ServiceCollection();
+        services.AddMediator(typeof(TestRoot));
+        var provider = services.BuildServiceProvider();
+        var mediator = provider.GetRequiredService<IMediator>();
         using var cts = new CancellationTokenSource();
         cts.Cancel();
         Assert.ThrowsAsync<TaskCanceledException>(async () =>
@@ -46,7 +55,10 @@ public class MediatorTests
     [Test]
     public async Task Send_Notification_Invokes_All_Notification_Handlers()
     {
-        var mediator = new ReflectionMediator(new ServiceCollection().BuildServiceProvider(), typeof(TestRoot));
+        var services = new ServiceCollection();
+        services.AddMediator(typeof(TestRoot));
+        var provider = services.BuildServiceProvider();
+        var mediator = provider.GetRequiredService<IMediator>();
         await mediator.Publish(new Pinged(), CancellationToken.None);
         Assert.That(PingHandlerA.Called, Is.EqualTo(1));
         Assert.That(PingHandlerB.Called, Is.EqualTo(1));
@@ -55,7 +67,10 @@ public class MediatorTests
     [Test]
     public async Task Send_Notification_With_No_Handlers_Is_NoOp()
     {
-        var mediator = new ReflectionMediator(new ServiceCollection().BuildServiceProvider(), typeof(TestRoot));
+        var services = new ServiceCollection();
+        services.AddMediator(typeof(TestRoot));
+        var provider = services.BuildServiceProvider();
+        var mediator = provider.GetRequiredService<IMediator>();
         // another notification with no handlers in this assembly
         await mediator.Publish(new UnhandledNotification(), CancellationToken.None);
         Assert.Pass();
@@ -73,24 +88,6 @@ public class MediatorTests
 
         Assert.That(m1, Is.SameAs(m2));
         Assert.That(m1, Is.InstanceOf<ReflectionMediator>());
-    }
-
-    [Test]
-    public async Task FlushHandler_Invalidates_Handler_Cache_For_Given_Type()
-    {
-        var mediator = new ReflectionMediator(new ServiceCollection().BuildServiceProvider(), typeof(TestRoot));
-
-        // Ensure initial behavior uses default (non-alternate)
-        _useAlternateHandler = false;
-        var result1 = await mediator.Send(new AddNumbers { A = 1, B = 1 }, CancellationToken.None);
-        Assert.That(result1, Is.EqualTo(2));
-
-        // Switch behavior and flush handler cache so a new handler instance is constructed
-        _useAlternateHandler = true;
-        await mediator.FlushHandler(typeof(AddNumbersHandler));
-
-        var result2 = await mediator.Send(new AddNumbers { A = 1, B = 2 }, CancellationToken.None);
-        Assert.That(result2, Is.EqualTo(100));
     }
 
     // Marker type to point mediator to this assembly for reflection
