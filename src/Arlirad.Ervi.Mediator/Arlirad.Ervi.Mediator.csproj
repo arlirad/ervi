@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         
         <PackageId>Arlirad.Ervi.Mediator</PackageId>
-        <Version>1.1.0</Version>
+        <Version>1.1.1</Version>
         <Authors>Arlirad</Authors>
         <Description>A simple mediator implementation.</Description>
         <RepositoryUrl>https://github.com/arlirad/ervi</RepositoryUrl>

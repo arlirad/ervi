@@ -24,12 +24,18 @@ public class ReflectionMediator(IServiceProvider serviceProvider) : IMediator
     public async ValueTask Publish<TNotification>(TNotification notification, CancellationToken ct)
         where TNotification : INotification
     {
+        var notificationType = notification.GetType();
+        var handlerType = typeof(INotificationHandler<>).MakeGenericType(notificationType);
+
         await using var scope = serviceProvider.CreateAsyncScope();
-        var instances = scope.ServiceProvider.GetServices<INotificationHandler<TNotification>>();
+        var instances = scope.ServiceProvider.GetServices(handlerType);
+
+        var method = handlerType.GetMethod(nameof(INotificationHandler<INotification>.Handle))
+            ?? throw new InvalidOperationException($"Handle method not found on {handlerType.FullName}");
 
         foreach (var instance in instances)
         {
-            await instance.Handle(notification, ct);
+            await (ValueTask)method.Invoke(instance, [notification, ct])!;
         }
     }
 

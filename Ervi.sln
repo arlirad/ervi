@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arlirad.Ervi.Net.Http.QPack
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arlirad.Ervi.Net.Http.QPack.Tests", "tests\Arlirad.Ervi.Net.Http.QPack.Tests\Arlirad.Ervi.Net.Http.QPack.Tests.csproj", "{6FD09C08-98B7-4D83-BE47-34E9C2B38363}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arlirad.Ervi.IO", "src\Arlirad.Ervi.IO\Arlirad.Ervi.IO.csproj", "{B796654A-25E0-4D52-859B-10092211025E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,7 @@ Global
 		{C6BB8A5B-0EBA-41D3-87AD-C97A0D149552} = {86713076-4E8D-44D4-9FC6-10C97DFAE861}
 		{03CC72D2-A32D-4942-8946-6E02189CDA9D} = {89562813-F543-4027-8B2E-9D7B571D040F}
 		{6FD09C08-98B7-4D83-BE47-34E9C2B38363} = {86713076-4E8D-44D4-9FC6-10C97DFAE861}
+		{B796654A-25E0-4D52-859B-10092211025E} = {89562813-F543-4027-8B2E-9D7B571D040F}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D7338114-8C50-4F09-A3FE-4C652C7DE079}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -68,5 +71,9 @@ Global
 		{6FD09C08-98B7-4D83-BE47-34E9C2B38363}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FD09C08-98B7-4D83-BE47-34E9C2B38363}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FD09C08-98B7-4D83-BE47-34E9C2B38363}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B796654A-25E0-4D52-859B-10092211025E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B796654A-25E0-4D52-859B-10092211025E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B796654A-25E0-4D52-859B-10092211025E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B796654A-25E0-4D52-859B-10092211025E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
